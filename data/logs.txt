@@ -1,0 +1,45 @@
+[2026-07-22 21:15:07] Added new recruiter: Sarah Connor for company TechCorp Systems (ID: 1)
+[2026-07-22 21:15:07] Added new recruiter: David Miller for company Innovate Solutions (ID: 2)
+[2026-07-22 21:15:07] Posted new job: Java Backend Engineer (Salary: 12 - 18 LPA) at TechCorp Systems (Job ID: 101)
+[2026-07-22 21:15:07] Posted new job: Full Stack Developer (Salary: 15 - 22 LPA) at Innovate Solutions (Job ID: 102)
+[2026-07-22 21:15:07] Posted new job: Data Engineer (Salary: 10 - 14 LPA) at TechCorp Systems (Job ID: 103)
+[2026-07-22 21:15:07] Added new candidate: Alice Smith (ID: 501)
+[2026-07-22 21:15:07] Added new candidate: Bob Johnson (ID: 502)
+[2026-07-22 21:15:07] Added new candidate: Charlie Brown (ID: 503)
+[2026-07-22 21:15:07] Candidate ID 501 applied for Job ID 101 (App ID: 1001)
+[2026-07-22 21:15:07] Candidate ID 502 applied for Job ID 102 (App ID: 1002)
+[2026-07-22 21:15:07] Initial demonstration data seeded successfully with compliant password 'Sarnine@123'.
+[2026-07-22 21:15:07] Automated Engine matched Candidate Alice Smith to Job Full Stack Developer (App ID: 1003)
+[2026-07-22 21:15:07] Automated Engine matched Candidate Bob Johnson to Job Java Backend Engineer (App ID: 1004)
+[2026-07-22 21:15:07] Automated Engine matched Candidate Charlie Brown to Job Data Engineer (App ID: 1005)
+[2026-07-22 21:15:07] Posted new job: Cloud DevOps Engineer (Salary: 15 - 20 LPA) at TechCorp Systems (Job ID: 104)
+[2026-07-22 21:15:07] Unhandled exception recovered: java.util.NoSuchElementException
+[2026-07-22 21:24:28] Added new candidate: Vikram Singh (ID: 504)
+[2026-07-22 21:24:28] Candidate ID 504 applied for Job ID 101 (App ID: 1001)
+[2026-07-22 21:26:02] Added new recruiter: Suhaas for company tcs (ID: 3)
+[2026-07-22 21:27:23] Added new candidate: Sudarsan (ID: 505)
+[2026-07-22 21:27:23] Candidate ID 505 applied for Job ID 104 (App ID: 1001)
+[2026-07-22 21:28:18] Updated candidate details for Candidate ID: 505
+[2026-07-23 08:00:15] Added new candidate: bharathvaj (ID: 506)
+[2026-07-23 08:00:15] Candidate ID 506 applied for Job ID 104 (App ID: 1001)
+[2026-07-23 08:01:37] Automated Engine matched Candidate Vikram Singh to Job Full Stack Developer (App ID: 1002)
+[2026-07-23 12:39:23] Exported full ATS CSV report to data/ats_export_report.csv
+[2026-07-23 13:24:24] Added new candidate: Ram (ID: 507)
+[2026-07-23 13:24:24] Candidate ID 507 applied for Job ID 101 (App ID: 1001)
+[2026-07-23 13:25:28] Updated candidate details for Candidate ID: 507
+[2026-09-09 11:16:39] Initial demonstration data seeded successfully. Recruiter password set to 'Sarnine@123'.
+[2026-09-09 11:26:39] Initial demonstration data seeded successfully. Recruiter password set to 'Sarnine@123'.
+[2026-09-09 11:29:33] Initial demonstration data seeded successfully. Recruiter password set to 'Sarnine@123'.
+[2026-09-09 11:34:30] Initial demonstration data seeded successfully. Recruiter password set to 'Sarnine@123'.
+[2026-09-16 11:23:53] Added new recruiter: Sarah Connor for company TechCorp Systems (ID: 1)
+[2026-09-16 11:23:53] Added new recruiter: David Miller for company Innovate Solutions (ID: 2)
+[2026-09-16 11:23:53] Posted new job: Java Backend Engineer (Salary: 12 - 18 LPA) at TechCorp Systems (Job ID: 101)
+[2026-09-16 11:23:53] Posted new job: Full Stack Developer (Salary: 15 - 22 LPA) at Innovate Solutions (Job ID: 102)
+[2026-09-16 11:23:53] Posted new job: Data Engineer (Salary: 10 - 14 LPA) at TechCorp Systems (Job ID: 103)
+[2026-09-16 11:23:53] Added new candidate: Alice Smith (ID: 501)
+[2026-09-16 11:23:53] Added new candidate: Bob Johnson (ID: 502)
+[2026-09-16 11:23:54] Added new candidate: Charlie Brown (ID: 503)
+[2026-09-16 11:23:54] Candidate ID 501 applied for Job ID 101 (App ID: 1001)
+[2026-09-16 11:23:54] Candidate ID 502 applied for Job ID 102 (App ID: 1002)
+[2026-09-16 11:23:54] Initial demonstration data seeded successfully. Recruiter password set to 'Sarnine@123'.
+[2026-09-16 11:26:03] Exported full ATS CSV report to data/ats_export_report.csv

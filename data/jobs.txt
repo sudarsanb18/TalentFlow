@@ -1,0 +1,4 @@
+101|Java Backend Engineer|TechCorp Systems|Bangalore / Remote|12 - 18 LPA|Java
+102|Full Stack Developer|Innovate Solutions|Hyderabad|15 - 22 LPA|React & Java
+103|Data Engineer|TechCorp Systems|Pune|10 - 14 LPA|Python
+104|Cloud DevOps Engineer|TechCorp Systems|Chennai|15 - 20 LPA|DevOps

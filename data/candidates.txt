@@ -1,0 +1,7 @@
+501|Alice Smith|alice.smith@gmail.com|9123456780|Pass@1234|Java|3.50|Available|Experienced Java Developer specializing in Microservices
+502|Bob Johnson|bob.j@yahoo.com|9123456781|Pass@1234|React & Java|5.00|Available|Senior Full Stack Specialist proficient in React and Java
+503|Charlie Brown|charlie.b@outlook.com|9123456782|Pass@1234|Python|2.00|Available|Data Engineer skilled in SQL and Python pipelines
+504|Vikram Singh|vikram.s@gmail.com|9876543299|Pass@999|Java|4.50|Available|Senior Java Architect
+505|Sudarsan|sudarsanb293@gmail.com|9876543210|Sudarsn123@|summa|3.00|vetti|Skilled in python and proficient in communication
+506|bharathvaj|bsfjjd@gmail.com|9876543210|Sudsrsan123@|C++|12.00|Available|asdjfsjfaljdfbasjdfas
+507|Ram|abc123@gmail.com|9876543210|Bharathvaj@2008|python|1.00|Available|java internship 2 months

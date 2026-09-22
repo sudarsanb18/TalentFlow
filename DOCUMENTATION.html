@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TalentFlow ATS - Technical Documentation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header-container {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            color: #1e3a8a;
+            font-size: 26px;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+        .badge {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        h2 {
+            color: #0f172a;
+            border-bottom: 1.5px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-top: 28px;
+            margin-bottom: 14px;
+            font-size: 18px;
+        }
+        h3 {
+            color: #1e40af;
+            font-size: 15px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        h4 {
+            color: #0f172a;
+            font-size: 13.5px;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        p, li {
+            font-size: 13px;
+            color: #334155;
+        }
+        ul {
+            margin-top: 4px;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11.5px;
+            overflow-x: auto;
+            line-height: 1.45;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 11px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <div>
+            <h1>TalentFlow ATS - Technical Documentation</h1>
+            <p class="subtitle">Core Java 21 Recruitment & Applicant Tracking System | Comprehensive Concepts Mapping</p>
+        </div>
+        <span class="badge">Pure Java 21 Architecture</span>
+    </div>
+
+    <h2>1. Executive Architecture Overview</h2>
+    <p>
+        <strong>TalentFlow</strong> is built as a college-viva-ready, production-quality Recruitment and Applicant Tracking System using 
+        <strong>Pure Core Java 21</strong> without third-party frameworks. The system enforces tight encapsulation, dynamic ID auto-incrementing, 
+        permanent file-backed storage, and strict Role-Based Access Control (RBAC).
+    </p>
+
+    <pre>
+                                +-----------------------------------+
+                                |  Presentation Layer (src/menu/)   |
+                                +-----------------------------------+
+                                                  |
+                                                  v
+                                +-----------------------------------+
+                                |   Service Layer (src/service/)    |
+                                +-----------------------------------+
+                                        |                   |
+                                        v                   v
+                    +-----------------------+   +-----------------------+
+                    | Repository (src/repo/)|   | Utility (src/util/)   |
+                    +-----------------------+   +-----------------------+
+                                |                           |
+                                v                           v
+                    +-----------------------+   +-----------------------+
+                    | Storage (data/*.txt)  |   | Audit Logs & Reports  |
+                    +-----------------------+   +-----------------------+
+    </pre>
+
+    <h2>2. Complete File & Concept Mapping</h2>
+
+    <h3>🏗️ Model Layer (src/model/)</h3>
+
+    <h4>📄 User.java</h4>
+    <ul>
+        <li><strong>Abstraction:</strong> Declared as an <code>abstract class User</code>. Serves as the base model for system actors and cannot be instantiated.</li>
+        <li><strong>Abstract Method:</strong> Declares <code>public abstract void displayDetails()</code> forcing child classes to provide concrete display logic.</li>
+        <li><strong>Encapsulation:</strong> Private fields (<code>id</code>, <code>name</code>, <code>email</code>, <code>phone</code>, <code>password</code>) protected behind public getters and setters.</li>
+    </ul>
+
+    <h4>📄 Candidate.java</h4>
+    <ul>
+        <li><strong>Inheritance (extends):</strong> Extends <code>User</code> to inherit common profile fields.</li>
+        <li><strong>Polymorphism (Method Overriding):</strong> Overrides <code>displayDetails()</code> and <code>toString()</code> to display candidate profile fields (<code>skill</code>, <code>experience</code>, <code>status</code>, <code>resumeSummary</code>).</li>
+    </ul>
+
+    <h4>📄 Recruiter.java</h4>
+    <ul>
+        <li><strong>Inheritance (extends):</strong> Extends <code>User</code> to inherit common user fields.</li>
+        <li><strong>Polymorphism (Method Overriding):** Overrides <code>displayDetails()</code> and <code>toString()</code> for recruiter attributes (<code>company</code>).</li>
+    </ul>
+
+    <h4>📄 Job.java</h4>
+    <ul>
+        <li><strong>Encapsulation:</strong> Protects job posting properties (<code>jobId</code>, <code>title</code>, <code>company</code>, <code>location</code>, <code>salaryRange</code>, <code>requiredSkill</code>).</li>
+        <li><strong>Constructor Overloading:</strong> Supports default vs custom salary range initialization.</li>
+    </ul>
+
+    <h4>📄 Application.java</h4>
+    <ul>
+        <li><strong>Data Model:</strong> Links Candidate ID to Job ID with status workflow tracking (<code>Applied</code>, <code>Interview</code>,  impulse <code>Selected</code>, <code>Rejected</code>, <code>Withdrawn</code>).</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h3>🗄️ Repository Layer (src/repository/)</h3>
+
+    <h4>📄 CandidateRepository.java</h4>
+    <ul>
+        <li><strong>Repository Pattern:</strong> Decouples data access from business logic. Uses <code>private static final ArrayList&lt;Candidate&gt;</code>.</li>
+        <li><strong>Static Initializer (static {}):</strong> Reads disk records from <code>data/candidates.txt</code> on system startup.</li>
+        <li><strong>Dynamic Max-ID Auto-Increment:</strong> Method <code>getNextId()</code> calculates <code>max(ID) + 1</code> (starting at 501), eliminating duplicate IDs.</li>
+        <li><strong>Email Uniqueness:</strong> Method <code>isEmailExists()</code> prevents duplicate candidate email registrations.</li>
+    </ul>
+
+    <h4>📄 RecruiterRepository.java & JobRepository.java</h4>
+    <ul>
+        <li><strong>Dynamic Max-ID Auto-Increment:</strong> Generates next unique Recruiter ID (starting at 1) and Job ID (starting at 101).</li>
+        <li><strong>Static Disk Persistence:</strong> Automatically syncs changes to <code>data/recruiters.txt</code> and <code>data/jobs.txt</code>.</li>
+    </ul>
+
+    <h4>📄 ApplicationRepository.java</h4>
+    <ul>
+        <li><strong>Dynamic Max-ID Auto-Increment:</strong> Generates unique Application ID (starting at 1001).</li>
+        <li><strong>Cascade Deletion Integrity:</strong> Methods <code>deleteApplicationsByCandidateId()</code> and <code>deleteApplicationsByJobId()</code> clean up orphaned applications upon deletion.</li>
+    </ul>
+
+    <h3>⚙️ Service Layer (src/service/)</h3>
+
+    <h4>📄 CandidateService.java & JobService.java</h4>
+    <ul>
+        <li><strong>Polymorphism (Method Overloading):** Implements overloaded search methods (<code>searchCandidate(int)</code> / <code>searchCandidate(String)</code> and <code>searchJob(int)</code> / <code>searchJob(String)</code>).</li>
+        <li><strong>Privacy View Filtering:</strong> Method <code>viewJobs()</code> hides the <code>REQUIRED SKILL</code> column in public job views.</li>
+    </ul>
+
+    <h4>📄 ApplicationService.java</h4>
+    <ul>
+        <li><strong>Automated Skill Matching Engine:</strong> Compares candidate skills against job requirements using string matching algorithms, auto-assigning eligible candidates.</li>
+        <li><strong>Dual-Interface View:</strong> Renders separate applicant portals for Candidates vs Recruiters.</li>
+    </ul>
+
+    <h3>🛠️ Utility Layer (src/util/)</h3>
+
+    <h4>📄 Validation.java</h4>
+    <ul>
+        <li><strong>Regular Expressions (Regex):</strong> Validates emails (strict domain format), 10-digit Indian phone numbers (starting with 6-9: <code>^[6-9][0-9]{9}$</code>), and 8+ char complex passwords (upper, lower, digit, special char).</li>
+    </ul>
+
+    <h4>📄 FileManager.java</h4>
+    <ul>
+        <li><strong>File I/O Streams:</strong> Uses <code>BufferedReader</code>, <code>BufferedWriter</code>, <code>FileReader</code>, and <code>FileWriter</code>.</li>
+        <li><strong>Pipe Serialization & CSV Export:</strong> Manages custom disk persistence and exports system reports to <code>data/ats_export_report.csv</code>.</li>
+    </ul>
+
+    <h3>🖥️ Presentation Layer (src/menu/)</h3>
+
+    <h4>📄 Menu.java & Main.java</h4>
+    <ul>
+        <li><strong>4-Portal Role-Based Architecture:</strong> Manages Admin Portal (Password: <code>admin_1234</code>), Recruiter Portal (Password: <code>Sarnine@123</code>), Candidate Portal, and New Candidate Registration.</li>
+        <li><strong>Exception Handling:</strong> Wraps console scanner loops in <code>try-catch</code> blocks to prevent crashes on invalid inputs.</li>
+    </ul>
+
+    <h2>3. Summary Matrix of Concepts</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Java Concept / Principle</th>
+                <th>File Location(s)</th>
+                <th>Implementation Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Abstraction</strong></td>
+                <td>User.java</td>
+                <td>Abstract base class & abstract method <code>displayDetails()</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>Inheritance</strong></td>
+                <td>Candidate.java, Recruiter.java</td>
+                <td>Child models inheriting common profile fields from <code>User</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>Encapsulation</strong></td>
+                <td>All Model Classes (src/model/)</td>
+                <td>Private domain fields accessed via public getters/setters.</td>
+            </tr>
+            <tr>
+                <td><strong>Polymorphism (Overriding)</strong></td>
+                <td>Candidate.java, Recruiter.java</td>
+                <td>Overriding <code>displayDetails()</code> and <code>toString()</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>Polymorphism (Overloading)</strong></td>
+                <td>CandidateService, JobService</td>
+                <td>Overloaded search methods for ID vs String keyword queries.</td>
+            </tr>
+            <tr>
+                <td><strong>Static Initializers</strong></td>
+                <td>All Repositories (src/repository/)</td>
+                <td>Loading disk data automatically into memory on startup.</td>
+            </tr>
+            <tr>
+                <td><strong>File I/O Streams</strong></td>
+                <td>FileManager.java</td>
+                <td>Disk persistence, system audit logging, and CSV report export.</td>
+            </tr>
+            <tr>
+                <td><strong>Regular Expressions</strong></td>
+                <td>Validation.java</td>
+                <td>Enforcing 8+ char complex passwords, 6-9 phone prefixes, and emails.</td>
+            </tr>
+            <tr>
+                <td><strong>Exception Handling</strong></td>
+                <td>Menu.java</td>
+                <td>Catching <code>InputMismatchException</code> in scanner loops.</td>
+            </tr>
+            <tr>
+                <td><strong>Role-Based Security</strong></td>
+                <td>Menu.java</td>
+                <td>Password guarding for Admin (<code>admin_1234</code>) & Recruiters (<code>Sarnine@123</code>).</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        TalentFlow ATS &copy; 2026 Core Java Enterprise Project. Generated for College Viva & Technical Review.
+    </div>
+
+</body>
+</html>

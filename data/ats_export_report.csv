@@ -1,0 +1,24 @@
+=== TALENTFLOW ATS ENTERPRISE REPORT ===
+Export Timestamp,2026-09-16 11:26:03
+
+--- RECRUITERS DIRECTORY ---
+Recruiter ID,Name,Email,Phone,Company
+1,"Sarah Connor","sarah.c@techcorp.com","9876543210","TechCorp Systems"
+2,"David Miller","david.m@innovate.io","9876543211","Innovate Solutions"
+
+--- JOB POSTINGS DIRECTORY ---
+Job ID,Title,Company,Location,Salary Range,Required Skill
+101,"Java Backend Engineer","TechCorp Systems","Bangalore / Remote","12 - 18 LPA","Java"
+102,"Full Stack Developer","Innovate Solutions","Hyderabad","15 - 22 LPA","React & Java"
+103,"Data Engineer","TechCorp Systems","Pune","10 - 14 LPA","Python"
+
+--- CANDIDATES DIRECTORY ---
+Candidate ID,Name,Email,Phone,Skill,Experience(Yrs),Status,Bio Summary
+501,"Alice Smith","alice.smith@gmail.com","9123456780","Java",3.5,"Available","Experienced Java Developer specializing in Microservices"
+502,"Bob Johnson","bob.j@yahoo.com","9123456781","React & Java",5.0,"Available","Senior Full Stack Specialist proficient in React and Java"
+503,"Charlie Brown","charlie.b@outlook.com","9123456782","Python",2.0,"Available","Data Engineer skilled in SQL and Python pipelines"
+
+--- APPLICATIONS TRACKING DIRECTORY ---
+Application ID,Candidate ID,Job ID,Status
+1001,501,101,"Applied"
+1002,502,102,"Applied"
