@@ -119,7 +119,7 @@ public class ApplicationService {
         ArrayList<Application> allApps = applicationRepo.getAllApplications();
         ArrayList<Application> candApps = new ArrayList<>();
         for (Application app : allApps) {
-            if (app.getCandidateId() == candidateId) {
+            if (app.getCandidateId() == candidateId && !"Withdrawn".equalsIgnoreCase(app.getStatus())) {
                 candApps.add(app);
             }
         }
@@ -154,6 +154,7 @@ public class ApplicationService {
      */
     public void viewApplicationsForRecruiter() {
         ArrayList<Application> apps = applicationRepo.getAllApplications();
+        apps.removeIf(a -> "Withdrawn".equalsIgnoreCase(a.getStatus()));
         if (apps.isEmpty()) {
             System.out.println("⚠️ No job applications found in the system.");
             return;

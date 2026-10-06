@@ -54,6 +54,19 @@ public class TalentFlowTests {
         System.out.printf("%-4s %s%n", ok ? "PASS" : "FAIL", name);
     }
 
+    /** Runs an action and returns everything it printed to the console. */
+    static String capture(Runnable action) {
+        java.io.PrintStream original = System.out;
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        System.setOut(new java.io.PrintStream(buffer, true, java.nio.charset.StandardCharsets.UTF_8));
+        try {
+            action.run();
+        } finally {
+            System.setOut(original);
+        }
+        return buffer.toString(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
     static int pct(String cand, double exp, String req, String pref, double min) {
         return MatchScorer.score(cand, exp, req, pref, min).percent();
     }
@@ -223,6 +236,14 @@ public class TalentFlowTests {
                 boolean withdrawn = as.withdrawApplication(medApp, medium.getId());
                 boolean gone = sm.getRankedApplicants(job.getJobId()).stream().noneMatch(a -> a.candidateId() == medium.getId());
                 return withdrawn && gone;
+            });
+            t("Database", "withdrawn application no longer shows in the candidate's view", () -> {
+                String out = capture(() -> as.viewApplicationsForCandidate(medium.getId()));
+                return !out.contains("ZZ Test Backend") && !out.contains("Withdrawn");
+            });
+            t("Database", "withdrawn application no longer shows in the recruiter's view", () -> {
+                String out = capture(() -> as.viewApplicationsForRecruiter());
+                return !out.contains("Zed Medium") && out.contains("Zed Strong");
             });
             t("Database", "recruiter cannot change a withdrawn application", () -> {
                 int medApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == medium.getId()
