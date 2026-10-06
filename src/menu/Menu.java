@@ -200,18 +200,17 @@ public class Menu {
             System.out.println("6  View Candidates");
             System.out.println("7  Search Candidate by ID");
             System.out.println("8  Search Candidate by Name");
-            System.out.println("10 Delete Candidate Profile");
             System.out.println("------------------------------------");
-            System.out.println("11 View Applications");
-            System.out.println("12 Update Application Status");
-            System.out.println("13 Run Skill Matching Engine");
+            System.out.println("9  View Applications");
+            System.out.println("10 Update Application Status");
+            System.out.println("11 Run Skill Matching Engine");
             System.out.println("------------- SMART MATCH -------------");
-            System.out.println("15 Set Job Match Rules (preferred skills, min experience)");
-            System.out.println("16 Run Weighted Matching Engine (match % + cut-off)");
-            System.out.println("17 Ranked Shortlist for a Job");
-            System.out.println("18 Preview Candidate Matches for a Job");
+            System.out.println("12 Set Job Match Rules (preferred skills, min experience)");
+            System.out.println("13 Run Weighted Matching Engine (match % + cut-off)");
+            System.out.println("14 Ranked Shortlist for a Job");
+            System.out.println("15 Preview Candidate Matches for a Job");
             System.out.println("---------------------------------------");
-            System.out.println("14 Back to Main Menu");
+            System.out.println("16 Back to Main Menu");
             System.out.println("====================================");
 
             int choice = readIntInput("Enter Choice : ");
@@ -224,15 +223,14 @@ public class Menu {
                 case 6 -> candidateService.viewCandidates();
                 case 7 -> handleSearchCandidateById();
                 case 8 -> handleSearchCandidateByName();
-                case 10 -> handleDeleteCandidateDirect();
-                case 11 -> applicationService.viewApplicationsForRecruiter();
-                case 12 -> handleUpdateApplicationStatusDirect();
-                case 13 -> applicationService.runAutomatedSkillMatching(recruiter.getCompany());
-                case 14 -> recruiterLoop = false;
-                case 15 -> handleSetJobMatchRules(recruiter);
-                case 16 -> handleWeightedMatching(recruiter);
-                case 17 -> handleRankedShortlist(recruiter);
-                case 18 -> handlePreviewMatches(recruiter);
+                case 9 -> applicationService.viewApplicationsForRecruiter();
+                case 10 -> handleUpdateApplicationStatusDirect();
+                case 11 -> applicationService.runAutomatedSkillMatching(recruiter.getCompany());
+                case 12 -> handleSetJobMatchRules(recruiter);
+                case 13 -> handleWeightedMatching(recruiter);
+                case 14 -> handleRankedShortlist(recruiter);
+                case 15 -> handlePreviewMatches(recruiter);
+                case 16 -> recruiterLoop = false;
                 default -> System.out.println("❌ Invalid choice.");
             }
         }
@@ -407,11 +405,6 @@ public class Menu {
     private void handleSearchCandidateByName() {
         String name = readStringInput("Enter Candidate Name or keyword to search: ");
         candidateService.searchCandidate(name);
-    }
-
-    private void handleDeleteCandidateDirect() {
-        int id = readIntInput("Enter Candidate ID to delete: ");
-        candidateService.deleteCandidate(id);
     }
 
     private void handleUpdateApplicationStatusDirect() {

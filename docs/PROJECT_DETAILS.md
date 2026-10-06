@@ -158,19 +158,19 @@ ID ranges: recruiters from 1, jobs from 101, candidates from 501, applications f
 | 3 | Search Job by ID or by title |
 | 4 | Update Job – **own company's jobs only**; blank input keeps the old value |
 | 5 | Delete Job – **own company's jobs only**; its applications are removed too |
-| 6 | View Candidates |
-| 7 | Search Candidate by ID |
-| 8 | Search Candidate by name |
-| – | (Option 9 removed: recruiters cannot edit candidate details; only the candidate can, from the Candidate portal) |
-| 10 | Delete Candidate Profile |
-| 11 | View Applications – active applications only (withdrawn ones are hidden) |
-| 12 | Update Application Status – **only Interview, Selected, Rejected**; withdrawn applications cannot be changed |
-| 13 | Run Skill Matching Engine (classic) – own company's jobs, whole-skill match, auto-applies matches |
-| 15 | **Set Job Match Rules** – preferred skills and minimum experience for one of your jobs |
-| 16 | **Run Weighted Matching Engine** – asks for a cut-off (default 60%), shows each candidate's match % and missing skills, auto-applies those at or above the cut-off |
-| 17 | **Ranked Shortlist for a Job** – applicants ranked by match %; shortlist top N to Interview and/or export to `data/shortlist_job_<id>.csv` |
-| 18 | **Preview Candidate Matches for a Job** – every candidate ranked by match % with missing skills and application status; creates nothing |
-| 14 | Back to Main Menu |
+| 6 | View Candidates (read only) |
+| 7 | Search Candidate by ID (read only) |
+| 8 | Search Candidate by name (read only) |
+| 9 | View Applications – active applications only (withdrawn ones are hidden) |
+| 10 | Update Application Status – **only Interview, Selected, Rejected**; withdrawn applications cannot be changed |
+| 11 | Run Skill Matching Engine (classic) – own company's jobs, whole-skill match, auto-applies matches |
+| 12 | **Set Job Match Rules** – preferred skills and minimum experience for one of your jobs |
+| 13 | **Run Weighted Matching Engine** – asks for a cut-off (default 60%), shows each candidate's match % and missing skills, auto-applies those at or above the cut-off |
+| 14 | **Ranked Shortlist for a Job** – applicants ranked by match %; shortlist top N to Interview and/or export to `data/shortlist_job_<id>.csv` |
+| 15 | **Preview Candidate Matches for a Job** – every candidate ranked by match % with missing skills and application status; creates nothing |
+| 16 | Back to Main Menu |
+
+Recruiters can **view and search** candidates but cannot edit or delete them. The admin has no candidate options either. Only the candidate can change or delete their own profile (Candidate portal options 3 and 5).
 
 ### Candidate portal (login with candidate ID + password)
 | Option | Feature |
@@ -235,7 +235,7 @@ Ranking order (shortlist and preview): **match % high → low**, then **more exp
 | Email unique per recruiter and per candidate | Service + UNIQUE constraint |
 | One application per candidate per job | Service check + UNIQUE(candidate_id, job_id) |
 | Recruiter can only update/delete/rule/shortlist/preview their own company's jobs | JobService / SmartMatchService |
-| Only the candidate can update their own profile (recruiters have no edit option) | Menu |
+| Only the candidate can update or delete their own profile – recruiters and the admin cannot | Menu (no recruiter/admin option exists) |
 | Recruiter status choices: Interview, Selected, Rejected | Menu |
 | Withdrawn application cannot be changed by a recruiter | ApplicationService |
 | Candidate withdraws only their own application, once, and not after Selected/Rejected | ApplicationService |
@@ -314,7 +314,8 @@ In addition, every feature was tested end to end through the real console menus 
 | Withdrawn applications still showed in candidate and recruiter views | Hidden |
 | ✅ ❌ symbols printed as `?` on Windows | Console switched to UTF-8 at start-up |
 | Invalid name/experience in registration discarded the whole form | Field is re-asked immediately |
-| A recruiter could edit a candidate's profile (option 9) | Option removed; only the candidate can update their profile |
+| A recruiter could edit a candidate's profile | Option removed; only the candidate can update their profile |
+| A recruiter could delete any candidate's account | Option removed; only the candidate can delete their own account |
 | Two database tests assumed an empty database and failed when real candidates existed | Tests now check only their own test candidates; pass on empty and populated databases |
 
 ---
@@ -331,7 +332,8 @@ In addition, every feature was tested end to end through the real console menus 
 | 3b485da | Withdrawn applications hidden from views |
 | 0c19a71 | Fixes from the full end-to-end test of every feature |
 | 4c53898 | Project documentation and test results |
-| (latest) | Recruiters can no longer edit candidate profiles; tests independent of existing data |
+| 2547e49 | Recruiters can no longer edit candidate profiles; tests independent of existing data |
+| (latest) | Recruiters can no longer delete candidates; recruiter menu renumbered 1–16 |
 
 ---
 
@@ -341,7 +343,6 @@ In addition, every feature was tested end to end through the real console menus 
 - Database URL, user and password are hard-coded in `DBConnection.java`.
 - IDs are generated as `MAX(id) + 1`, which is fine for one user but not for many at the same time.
 - A candidate who withdraws cannot apply to the same job again (one application per candidate per job).
-- Any logged-in recruiter can delete any candidate profile (option 10).
 - Tested with small demo datasets only; no load or multi-user testing.
 - Console only; no GUI or web interface.
 

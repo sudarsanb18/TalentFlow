@@ -268,7 +268,7 @@ public class SmartMatchService {
                     cut(a.missingRequired().isEmpty() ? "-" : String.join(", ", a.missingRequired()), 24), a.status());
         }
         System.out.println("=========================================================================================================");
-        System.out.println("Preview only: no applications were created. Use option 16 to apply candidates above a cut-off.");
+        System.out.println("Preview only: no applications were created. Use option 13 to apply candidates above a cut-off.");
         return scored;
     }
 
