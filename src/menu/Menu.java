@@ -229,7 +229,7 @@ public class Menu {
                 case 10 -> handleDeleteCandidateDirect();
                 case 11 -> applicationService.viewApplicationsForRecruiter();
                 case 12 -> handleUpdateApplicationStatusDirect();
-                case 13 -> applicationService.runAutomatedSkillMatching();
+                case 13 -> applicationService.runAutomatedSkillMatching(recruiter.getCompany());
                 case 14 -> recruiterLoop = false;
                 case 15 -> handleSetJobMatchRules(recruiter);
                 case 16 -> handleWeightedMatching(recruiter);
@@ -284,7 +284,7 @@ public class Menu {
                 case 3 -> {
                     String skill = readStringInput("Enter New Skill (" + candidate.getSkill() + "): ");
                     double exp = readDoubleInput("Enter New Experience (" + candidate.getExperience() + " yrs): ");
-                    String status = readStringInput("Enter New Status (" + candidate.getStatus() + "): ");
+                    String status = readStringInput("Enter New Status [Available / Not Available / Hired] (current: " + candidate.getStatus() + ", Enter to keep): ");
                     candidateService.updateCandidate(candidateId, skill, exp, status);
                 }
                 case 4 -> {
@@ -322,12 +322,12 @@ public class Menu {
         }
 
         System.out.println("\n--- Please enter your Candidate Profile details ---");
-        String name = readStringInput("Enter Your Full Name: ");
+        String name = readValidNameInput("Enter Your Full Name: ");
         String email = readValidEmailInput("Enter Your Email Address: ");
         String phone = readValidPhoneInput("Enter Your 10-digit Phone Number (starting with 6,7,8,9): ");
         String password = readValidPasswordInput("Create Your Password (min 8 chars, upper, lower, digit, special char): ");
         String skill = readStringInput("Enter Your Primary Skill (e.g. Java, Python, React): ");
-        double experience = readDoubleInput("Enter Your Experience (in years): ");
+        double experience = readValidExperienceInput("Enter Your Experience (in years): ");
         String resumeSummary = readStringInput("Enter Short Bio / Resume Summary: ");
 
         Candidate candidate = candidateService.addCandidate(name, email, phone, password, skill, experience, resumeSummary);
@@ -347,7 +347,7 @@ public class Menu {
 
     private void handleAddRecruiter() {
         System.out.println("\n--- Add New Recruiter ---");
-        String name = readStringInput("Enter Recruiter Name: ");
+        String name = readValidNameInput("Enter Recruiter Name: ");
         String email = readValidEmailInput("Enter Recruiter Email: ");
         String phone = readValidPhoneInput("Enter Recruiter 10-digit Phone Number (starting with 6,7,8,9): ");
         String password = readValidPasswordInput("Set Recruiter Password (min 8 chars, upper, lower, digit, special char): ");
@@ -368,19 +368,23 @@ public class Menu {
 
     private void handleUpdateJobForRecruiter(Recruiter recruiter) {
         int jobId = readIntInput("Enter Job ID to update: ");
+        if (!jobService.isJobOwnedBy(jobId, recruiter.getCompany())) {
+            System.out.println("❌ Access Denied! Job ID " + jobId + " does not exist or belongs to another company.");
+            return;
+        }
         Job existing = jobService.searchJob(jobId);
         if (existing != null) {
             String title = readStringInput("Enter New Job Title (" + existing.getTitle() + "): ");
             String location = readStringInput("Enter New Location (" + existing.getLocation() + "): ");
             String requiredSkill = readStringInput("Enter New Required Skill (" + existing.getRequiredSkill() + "): ");
 
-            jobService.updateJob(jobId, title, location, requiredSkill);
+            jobService.updateJob(jobId, recruiter.getCompany(), title, location, requiredSkill);
         }
     }
 
     private void handleDeleteJobForRecruiter(Recruiter recruiter) {
         int jobId = readIntInput("Enter Job ID to delete: ");
-        jobService.deleteJob(jobId);
+        jobService.deleteJob(jobId, recruiter.getCompany());
     }
 
     private void handleSearchJob() {
@@ -413,7 +417,7 @@ public class Menu {
         if (existing != null) {
             String skill = readStringInput("Enter New Skill (" + existing.getSkill() + "): ");
             double exp = readDoubleInput("Enter New Experience (" + existing.getExperience() + " yrs): ");
-            String status = readStringInput("Enter New Status (" + existing.getStatus() + "): ");
+            String status = readStringInput("Enter New Status [Available / Not Available / Hired] (current: " + existing.getStatus() + ", Enter to keep): ");
             candidateService.updateCandidate(id, skill, exp, status);
         }
     }
@@ -491,6 +495,10 @@ public class Menu {
 
     private void handleSetJobMatchRules(Recruiter recruiter) {
         int jobId = readIntInput("Enter Job ID to set match rules for: ");
+        if (!jobService.isJobOwnedBy(jobId, recruiter.getCompany())) {
+            System.out.println("Access denied: Job ID " + jobId + " does not exist or belongs to another company.");
+            return;
+        }
         String preferred = readStringInput("Enter Preferred Skills (comma separated, blank for none): ");
         double minExp = readDoubleInput("Enter Minimum Experience in years (0 for none): ");
         smartMatchService.setJobRule(jobId, recruiter.getCompany(), preferred, minExp);
@@ -574,6 +582,26 @@ public class Menu {
                 System.out.println("❌ Invalid input! Please enter a valid numerical integer.");
                 scanner.nextLine();
             }
+        }
+    }
+
+    private String readValidNameInput(String prompt) {
+        while (true) {
+            String name = readStringInput(prompt);
+            if (Validation.isValidName(name)) {
+                return name;
+            }
+            System.out.println("❌ Invalid Name! Use letters only, at least 2 characters. Please enter again.");
+        }
+    }
+
+    private double readValidExperienceInput(String prompt) {
+        while (true) {
+            double experience = readDoubleInput(prompt);
+            if (Validation.isPositiveExperience(experience)) {
+                return experience;
+            }
+            System.out.println("❌ Invalid Experience! Must be between 0 and 60 years. Please enter again.");
         }
     }
 

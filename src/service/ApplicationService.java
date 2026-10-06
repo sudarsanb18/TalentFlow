@@ -86,6 +86,15 @@ public class ApplicationService {
             return false;
         }
 
+        if ("Withdrawn".equalsIgnoreCase(app.getStatus())) {
+            System.out.println("⚠️ Application ID " + applicationId + " is already withdrawn.");
+            return false;
+        }
+        if ("Selected".equalsIgnoreCase(app.getStatus()) || "Rejected".equalsIgnoreCase(app.getStatus())) {
+            System.out.println("❌ Application ID " + applicationId + " already has a final decision (" + app.getStatus() + ") and cannot be withdrawn.");
+            return false;
+        }
+
         boolean updated = applicationRepo.updateStatus(applicationId, "Withdrawn");
         if (updated) {
             System.out.println("✅ Application ID " + applicationId + " has been successfully Withdrawn.");
@@ -189,8 +198,19 @@ public class ApplicationService {
      * matching candidates with eligible job openings and creating applications.
      */
     public void runAutomatedSkillMatching() {
+        runAutomatedSkillMatching(null);
+    }
+
+    /**
+     * Same engine, limited to the jobs of one company (null = all companies).
+     * A candidate matches when they have at least one of the job's required skills (whole-skill comparison).
+     */
+    public void runAutomatedSkillMatching(String company) {
         ArrayList<Candidate> candidates = candidateRepo.getAllCandidates();
         ArrayList<Job> jobs = jobRepo.getAllJobs();
+        if (company != null) {
+            jobs.removeIf(j -> j.getCompany() == null || !j.getCompany().trim().equalsIgnoreCase(company.trim()));
+        }
 
         if (candidates.isEmpty() || jobs.isEmpty()) {
             System.out.println("⚠️ Skill Matching Engine requires registered Candidates and Job openings.");
@@ -212,8 +232,7 @@ public class ApplicationService {
         for (Candidate c : candidates) {
             for (Job j : jobs) {
                 // Perform case-insensitive skill matching
-                boolean isMatch = c.getSkill().toLowerCase().contains(j.getRequiredSkill().toLowerCase()) ||
-                                  j.getRequiredSkill().toLowerCase().contains(c.getSkill().toLowerCase());
+                boolean isMatch = skillsOverlap(c.getSkill(), j.getRequiredSkill());
 
                 if (isMatch) {
                     matchesFound++;
@@ -253,6 +272,16 @@ public class ApplicationService {
      * @param newStatus     New status string ("Interview", "Selected", "Rejected", "Withdrawn")
      * @return true if status transition succeeded, false otherwise
      */
+    /** True when the candidate has at least one of the job's required skills (case-insensitive, whole skill). */
+    static boolean skillsOverlap(String candidateSkills, String requiredSkills) {
+        java.util.List<String> have = new java.util.ArrayList<>();
+        for (String s : MatchScorer.parseSkills(candidateSkills)) have.add(s.toLowerCase());
+        for (String r : MatchScorer.parseSkills(requiredSkills)) {
+            if (have.contains(r.toLowerCase())) return true;
+        }
+        return false;
+    }
+
     public boolean updateApplicationStatus(int applicationId, String newStatus) {
         Application app = applicationRepo.findById(applicationId);
         if (app == null) {

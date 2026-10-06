@@ -93,6 +93,23 @@ public class Validation {
      * @param skill Input skill string
      * @return true if non-empty, false otherwise
      */
+    /** Allowed candidate profile statuses. */
+    public static final String[] CANDIDATE_STATUSES = {"Available", "Not Available", "Hired"};
+
+    /**
+     * Returns the properly capitalised status when it is one of CANDIDATE_STATUSES, otherwise null.
+     *
+     * @param status Input status string
+     * @return normalised status or null
+     */
+    public static String normalizeCandidateStatus(String status) {
+        if (status == null) return null;
+        for (String allowed : CANDIDATE_STATUSES) {
+            if (allowed.equalsIgnoreCase(status.trim())) return allowed;
+        }
+        return null;
+    }
+
     public static boolean isValidSkill(String skill) {
         return skill != null && !skill.trim().isEmpty();
     }

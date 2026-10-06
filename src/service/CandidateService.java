@@ -216,10 +216,19 @@ public class CandidateService {
             return false;
         }
 
+        String status = null;
+        if (newStatus != null && !newStatus.trim().isEmpty()) {
+            status = Validation.normalizeCandidateStatus(newStatus);
+            if (status == null) {
+                System.out.println("❌ Invalid Status! Choose one of: " + String.join(", ", Validation.CANDIDATE_STATUSES) + ".");
+                return false;
+            }
+        }
+
         candidate.setSkill(newSkill.trim());
         candidate.setExperience(newExperience);
-        if (newStatus != null && !newStatus.trim().isEmpty()) {
-            candidate.setStatus(newStatus.trim());
+        if (status != null) {
+            candidate.setStatus(status);
         }
 
         boolean updated = candidateRepo.updateCandidate(candidate);

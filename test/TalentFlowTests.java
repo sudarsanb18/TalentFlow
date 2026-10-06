@@ -95,6 +95,10 @@ public class TalentFlowTests {
         t("Validation", "negative experience rejected", () -> !Validation.isPositiveExperience(-1));
         t("Validation", "blank skill rejected", () -> !Validation.isValidSkill("   "));
 
+        t("Validation", "candidate status Available accepted", () -> "Available".equals(Validation.normalizeCandidateStatus("available")));
+        t("Validation", "candidate status Not Available accepted", () -> "Not Available".equals(Validation.normalizeCandidateStatus(" NOT available ")));
+        t("Validation", "free-text candidate status rejected", () -> Validation.normalizeCandidateStatus("vetti") == null);
+
         // ------------------------------------------------------------ MatchScorer
         t("MatchScorer", "all required matched, no extras = 100", () -> pct("Java, SQL", 3, "Java, SQL", "", 0) == 100);
         t("MatchScorer", "half of required matched = 50", () -> pct("Java", 3, "Java, SQL", "", 0) == 50);
@@ -269,6 +273,54 @@ public class TalentFlowTests {
                     } catch (Exception ignored) {
                     }
                 }
+            });
+
+            // ---------------- fixes from the full end-to-end test run
+            Job other = js.addJob("ZZ Other Company Job", "ZZ_OTHER_CO", "Pune", "8 LPA", "Java");
+            try {
+                t("Fixes", "recruiter cannot update another company's job", () ->
+                        !js.updateJob(other.getJobId(), CO, "Hacked", "Nowhere", "COBOL")
+                                && jRepo.findById(other.getJobId()).getTitle().equals("ZZ Other Company Job"));
+                t("Fixes", "recruiter cannot delete another company's job", () ->
+                        !js.deleteJob(other.getJobId(), CO) && jRepo.findById(other.getJobId()) != null);
+                t("Fixes", "recruiter can update their own company's job", () ->
+                        js.updateJob(job.getJobId(), CO, "", "Coimbatore", "")
+                                && jRepo.findById(job.getJobId()).getLocation().equals("Coimbatore"));
+                t("Fixes", "old matching engine only uses the recruiter's own jobs", () -> {
+                    as.runAutomatedSkillMatching(CO);
+                    return as.getAllApplications().stream().noneMatch(a -> a.getJobId() == other.getJobId());
+                });
+                t("Fixes", "old matching engine no longer matches Java to JavaScript", () -> {
+                    Candidate js1 = cs.addCandidate("Zed Script", "zz.script@testco.com", "9000000004", "Test@1234", "JavaScript", 2.0, "test");
+                    try {
+                        as.runAutomatedSkillMatching("ZZ_OTHER_CO");
+                        return as.getAllApplications().stream().noneMatch(a -> a.getCandidateId() == js1.getId());
+                    } finally {
+                        cRepo.deleteCandidate(js1.getId());
+                    }
+                });
+            } finally {
+                jRepo.deleteJob(other.getJobId());
+            }
+
+            t("Fixes", "free-text candidate status is refused", () -> !cs.updateCandidate(weak.getId(), "Python", 1.0, "vetti")
+                    && cRepo.findById(weak.getId()).getStatus().equals("Available"));
+            t("Fixes", "valid candidate status is saved with proper capitals", () -> cs.updateCandidate(weak.getId(), "Python", 1.0, "not available")
+                    && cRepo.findById(weak.getId()).getStatus().equals("Not Available"));
+            t("Fixes", "an application cannot be withdrawn twice", () -> {
+                int medApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == medium.getId()
+                        && a.getJobId() == job.getJobId()).findFirst().get().getApplicationId();
+                return !as.withdrawApplication(medApp, medium.getId());
+            });
+            t("Fixes", "a Selected application cannot be withdrawn", () -> {
+                int strongApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == strong.getId()
+                        && a.getJobId() == job.getJobId()).findFirst().get().getApplicationId();
+                return !as.withdrawApplication(strongApp, strong.getId());
+            });
+            t("Fixes", "a candidate cannot withdraw another candidate's application", () -> {
+                int strongApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == strong.getId()
+                        && a.getJobId() == job.getJobId()).findFirst().get().getApplicationId();
+                return !as.withdrawApplication(strongApp, weak.getId());
             });
         } finally {
             // clean-up: deleting the job cascades to its applications and match rules

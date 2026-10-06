@@ -179,6 +179,31 @@ public class JobService {
      * @param id Job ID to delete
      * @return true if deleted, false otherwise
      */
+    /** True when the job exists and was posted by the given company. */
+    public boolean isJobOwnedBy(int jobId, String company) {
+        Job job = jobRepo.findById(jobId);
+        return job != null && company != null && job.getCompany() != null
+                && job.getCompany().trim().equalsIgnoreCase(company.trim());
+    }
+
+    /** Recruiter-safe update: only the company that posted the job may change it. */
+    public boolean updateJob(int jobId, String company, String newTitle, String newLocation, String newRequiredSkill) {
+        if (!isJobOwnedBy(jobId, company)) {
+            System.out.println("❌ Access Denied! Job ID " + jobId + " does not exist or belongs to another company.");
+            return false;
+        }
+        return updateJob(jobId, newTitle, newLocation, newRequiredSkill);
+    }
+
+    /** Recruiter-safe delete: only the company that posted the job may delete it. */
+    public boolean deleteJob(int id, String company) {
+        if (!isJobOwnedBy(id, company)) {
+            System.out.println("❌ Access Denied! Job ID " + id + " does not exist or belongs to another company.");
+            return false;
+        }
+        return deleteJob(id);
+    }
+
     public boolean deleteJob(int id) {
         boolean deleted = jobRepo.deleteJob(id);
         if (deleted) {
