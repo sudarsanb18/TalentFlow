@@ -161,7 +161,7 @@ ID ranges: recruiters from 1, jobs from 101, candidates from 501, applications f
 | 6 | View Candidates |
 | 7 | Search Candidate by ID |
 | 8 | Search Candidate by name |
-| 9 | Update Candidate Profile – skill, experience, status (Available / Not Available / Hired) |
+| – | (Option 9 removed: recruiters cannot edit candidate details; only the candidate can, from the Candidate portal) |
 | 10 | Delete Candidate Profile |
 | 11 | View Applications – active applications only (withdrawn ones are hidden) |
 | 12 | Update Application Status – **only Interview, Selected, Rejected**; withdrawn applications cannot be changed |
@@ -235,6 +235,7 @@ Ranking order (shortlist and preview): **match % high → low**, then **more exp
 | Email unique per recruiter and per candidate | Service + UNIQUE constraint |
 | One application per candidate per job | Service check + UNIQUE(candidate_id, job_id) |
 | Recruiter can only update/delete/rule/shortlist/preview their own company's jobs | JobService / SmartMatchService |
+| Only the candidate can update their own profile (recruiters have no edit option) | Menu |
 | Recruiter status choices: Interview, Selected, Rejected | Menu |
 | Withdrawn application cannot be changed by a recruiter | ApplicationService |
 | Candidate withdraws only their own application, once, and not after Selected/Rejected | ApplicationService |
@@ -287,7 +288,7 @@ When the database is empty, the app seeds demo data on first start:
 
 See [TEST_RESULTS.md](TEST_RESULTS.md) for the full list.
 
-**78 of 78 tests passed** on MySQL 8.0.45 (run on 2026-10-06 against a throwaway test database).
+**78 of 78 tests passed** on MySQL 8.0.45 (run on 2026-10-06 against a throwaway test database), both on an empty database and on a database with the demo data already in it.
 
 | Category | Tests | Needs database | Passed |
 |---|---:|:---:|---:|
@@ -313,6 +314,8 @@ In addition, every feature was tested end to end through the real console menus 
 | Withdrawn applications still showed in candidate and recruiter views | Hidden |
 | ✅ ❌ symbols printed as `?` on Windows | Console switched to UTF-8 at start-up |
 | Invalid name/experience in registration discarded the whole form | Field is re-asked immediately |
+| A recruiter could edit a candidate's profile (option 9) | Option removed; only the candidate can update their profile |
+| Two database tests assumed an empty database and failed when real candidates existed | Tests now check only their own test candidates; pass on empty and populated databases |
 
 ---
 
@@ -327,6 +330,8 @@ In addition, every feature was tested end to end through the real console menus 
 | b195264 | Console symbols, recruiter status options, withdrawn applications locked |
 | 3b485da | Withdrawn applications hidden from views |
 | 0c19a71 | Fixes from the full end-to-end test of every feature |
+| 4c53898 | Project documentation and test results |
+| (latest) | Recruiters can no longer edit candidate profiles; tests independent of existing data |
 
 ---
 

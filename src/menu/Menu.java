@@ -200,7 +200,6 @@ public class Menu {
             System.out.println("6  View Candidates");
             System.out.println("7  Search Candidate by ID");
             System.out.println("8  Search Candidate by Name");
-            System.out.println("9  Update Candidate Profile");
             System.out.println("10 Delete Candidate Profile");
             System.out.println("------------------------------------");
             System.out.println("11 View Applications");
@@ -225,7 +224,6 @@ public class Menu {
                 case 6 -> candidateService.viewCandidates();
                 case 7 -> handleSearchCandidateById();
                 case 8 -> handleSearchCandidateByName();
-                case 9 -> handleUpdateCandidateDirect();
                 case 10 -> handleDeleteCandidateDirect();
                 case 11 -> applicationService.viewApplicationsForRecruiter();
                 case 12 -> handleUpdateApplicationStatusDirect();
@@ -409,17 +407,6 @@ public class Menu {
     private void handleSearchCandidateByName() {
         String name = readStringInput("Enter Candidate Name or keyword to search: ");
         candidateService.searchCandidate(name);
-    }
-
-    private void handleUpdateCandidateDirect() {
-        int id = readIntInput("Enter Candidate ID to update: ");
-        Candidate existing = candidateService.getCandidateById(id);
-        if (existing != null) {
-            String skill = readStringInput("Enter New Skill (" + existing.getSkill() + "): ");
-            double exp = readDoubleInput("Enter New Experience (" + existing.getExperience() + " yrs): ");
-            String status = readStringInput("Enter New Status [Available / Not Available / Hired] (current: " + existing.getStatus() + ", Enter to keep): ");
-            candidateService.updateCandidate(id, skill, exp, status);
-        }
     }
 
     private void handleDeleteCandidateDirect() {

@@ -1,6 +1,6 @@
 # TalentFlow – Test Results
 
-Run on 2026-10-06 with `java TalentFlowTests --db` against MySQL 8.0.45 (throwaway test database).
+Run on 2026-10-06 with `java TalentFlowTests --db` against MySQL 8.0.45 (throwaway test database). The same 78 tests also passed on a database already holding the demo data, and that data was left unchanged.
 
 **Result: 78 tests, 78 passed, 0 failed.**
 

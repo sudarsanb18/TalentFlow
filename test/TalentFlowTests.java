@@ -67,6 +67,17 @@ public class TalentFlowTests {
         return buffer.toString(java.nio.charset.StandardCharsets.UTF_8);
     }
 
+    /** Rows of the given candidates only, in the same order, so real data in the database cannot disturb a test. */
+    static List<RankedApplicant> only(List<RankedApplicant> rows, int... candidateIds) {
+        List<RankedApplicant> out = new ArrayList<>();
+        for (RankedApplicant r : rows) {
+            for (int id : candidateIds) {
+                if (r.candidateId() == id) out.add(r);
+            }
+        }
+        return out;
+    }
+
     static int pct(String cand, double exp, String req, String pref, double min) {
         return MatchScorer.score(cand, exp, req, pref, min).percent();
     }
@@ -205,8 +216,9 @@ public class TalentFlowTests {
             t("Database", "preview lists every candidate best match first without applying anyone", () -> {
                 int before = sm.getRankedApplicants(job.getJobId()).size();
                 List<RankedApplicant> p = sm.previewMatches(job.getJobId(), CO);
-                boolean ordered = p != null && p.size() >= 3 && p.get(0).candidateId() == strong.getId()
-                        && p.get(1).candidateId() == medium.getId() && p.get(2).candidateId() == weak.getId();
+                List<RankedApplicant> mine = p == null ? List.of() : only(p, strong.getId(), medium.getId(), weak.getId());
+                boolean ordered = mine.size() == 3 && mine.get(0).candidateId() == strong.getId()
+                        && mine.get(1).candidateId() == medium.getId() && mine.get(2).candidateId() == weak.getId();
                 return ordered && sm.getRankedApplicants(job.getJobId()).size() == before;
             });
             t("Database", "preview is refused for another company", () -> sm.previewMatches(job.getJobId(), "Other Co") == null);
@@ -227,12 +239,19 @@ public class TalentFlowTests {
             t("Database", "manual duplicate application is rejected by the UNIQUE rule", () -> as.applyJob(strong.getId(), job.getJobId()) == null);
             t("Database", "strong candidate ranks above medium candidate", () -> {
                 List<RankedApplicant> r = sm.getRankedApplicants(job.getJobId());
-                return r.size() >= 2 && r.get(0).candidateId() == strong.getId() && r.get(1).candidateId() == medium.getId();
+                List<RankedApplicant> mine = only(r, strong.getId(), medium.getId());
+                return mine.size() == 2 && mine.get(0).candidateId() == strong.getId() && mine.get(1).candidateId() == medium.getId();
             });
             t("Database", "shortlist top 1 moves only the first applicant to Interview", () -> {
+                List<RankedApplicant> before = sm.getRankedApplicants(job.getJobId());
                 int moved = sm.shortlistTop(job.getJobId(), CO, 1);
-                List<RankedApplicant> r = sm.getRankedApplicants(job.getJobId());
-                return moved == 1 && r.get(0).status().equals("Interview") && r.get(1).status().equals("Applied");
+                List<RankedApplicant> after = sm.getRankedApplicants(job.getJobId());
+                boolean ok = moved == 1;
+                for (RankedApplicant b : before) {
+                    String now = after.stream().filter(a -> a.applicationId() == b.applicationId()).findFirst().get().status();
+                    ok &= (b == before.get(0)) ? now.equals("Interview") : now.equals(b.status());
+                }
+                return ok;
             });
             t("Database", "withdrawn applicant is left out of the ranked shortlist", () -> {
                 List<RankedApplicant> r = sm.getRankedApplicants(job.getJobId());
