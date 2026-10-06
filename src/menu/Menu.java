@@ -6,7 +6,9 @@ import model.Recruiter;
 import service.ApplicationService;
 import service.CandidateService;
 import service.JobService;
+import service.RankedApplicant;
 import service.RecruiterService;
+import service.SmartMatchService;
 import util.FileManager;
 import util.Validation;
 
@@ -27,6 +29,7 @@ public class Menu {
     private final JobService jobService;
     private final ApplicationService applicationService;
     private final Scanner scanner;
+    private final SmartMatchService smartMatchService = new SmartMatchService();
 
     private static final String ADMIN_PASSWORD = "admin_1234";
 
@@ -203,6 +206,11 @@ public class Menu {
             System.out.println("11 View Applications");
             System.out.println("12 Update Application Status");
             System.out.println("13 Run Skill Matching Engine");
+            System.out.println("------------- SMART MATCH -------------");
+            System.out.println("15 Set Job Match Rules (preferred skills, min experience)");
+            System.out.println("16 Run Weighted Matching Engine (match % + cut-off)");
+            System.out.println("17 Ranked Shortlist for a Job");
+            System.out.println("---------------------------------------");
             System.out.println("14 Back to Main Menu");
             System.out.println("====================================");
 
@@ -222,6 +230,9 @@ public class Menu {
                 case 12 -> handleUpdateApplicationStatusDirect();
                 case 13 -> applicationService.runAutomatedSkillMatching();
                 case 14 -> recruiterLoop = false;
+                case 15 -> handleSetJobMatchRules(recruiter);
+                case 16 -> handleWeightedMatching(recruiter);
+                case 17 -> handleRankedShortlist(recruiter);
                 default -> System.out.println("❌ Invalid choice.");
             }
         }
@@ -260,6 +271,7 @@ public class Menu {
             System.out.println("2  View Available Job Openings");
             System.out.println("3  Update My Profile");
             System.out.println("4  Withdraw My Application");
+            System.out.println("7  View Jobs with My Match %");
             System.out.println("5  Delete My Account");
             System.out.println("6  Back to Main Menu");
             System.out.println("====================================");
@@ -288,6 +300,7 @@ public class Menu {
                     }
                 }
                 case 6 -> candidateLoop = false;
+                case 7 -> smartMatchService.viewJobsWithMatch(candidate);
                 default -> System.out.println("❌ Invalid choice.");
             }
         }
@@ -472,6 +485,46 @@ public class Menu {
         System.out.println("*********************************************************************************************************");
         System.out.println("                             END OF MASTER ADMIN DASHBOARD REPORT                                        ");
         System.out.println("*********************************************************************************************************\n");
+    }
+
+    // ================================================================================
+    // SMART MATCH: weighted match percentage and ranked shortlist (added feature)
+    // ================================================================================
+
+    private void handleSetJobMatchRules(Recruiter recruiter) {
+        int jobId = readIntInput("Enter Job ID to set match rules for: ");
+        String preferred = readStringInput("Enter Preferred Skills (comma separated, blank for none): ");
+        double minExp = readDoubleInput("Enter Minimum Experience in years (0 for none): ");
+        smartMatchService.setJobRule(jobId, recruiter.getCompany(), preferred, minExp);
+    }
+
+    private void handleWeightedMatching(Recruiter recruiter) {
+        String raw = readStringInput("Enter cut-off match % (0-100, press Enter for " + SmartMatchService.DEFAULT_CUTOFF + "): ");
+        int cutoff = SmartMatchService.DEFAULT_CUTOFF;
+        if (!raw.isEmpty()) {
+            try {
+                cutoff = Integer.parseInt(raw);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number. Using the default cut-off of " + cutoff + "%.");
+            }
+        }
+        smartMatchService.runWeightedMatching(recruiter.getCompany(), cutoff);
+    }
+
+    private void handleRankedShortlist(Recruiter recruiter) {
+        int jobId = readIntInput("Enter Job ID for the ranked shortlist: ");
+        java.util.List<RankedApplicant> ranked = smartMatchService.showRankedShortlist(jobId, recruiter.getCompany());
+        if (ranked == null || ranked.isEmpty()) return;
+
+        System.out.println("1) Shortlist top N to Interview   2) Export ranked list to CSV   3) Both   4) Back");
+        int choice = readIntInput("Choose an option (1-4): ");
+        if (choice == 1 || choice == 3) {
+            int n = readIntInput("How many top applicants to shortlist (N): ");
+            smartMatchService.shortlistTop(jobId, recruiter.getCompany(), n);
+        }
+        if (choice == 2 || choice == 3) {
+            smartMatchService.exportShortlist(jobId, recruiter.getCompany());
+        }
     }
 
     private String readValidPasswordInput(String prompt) {
