@@ -183,6 +183,14 @@ public class TalentFlowTests {
             t("Database", "match rules refused for another company", () -> !sm.setJobRule(job.getJobId(), "Other Co", "Docker", 2.0));
             t("Database", "negative minimum experience refused", () -> !sm.setJobRule(job.getJobId(), CO, "Docker", -1));
 
+            t("Database", "preview lists every candidate best match first without applying anyone", () -> {
+                int before = sm.getRankedApplicants(job.getJobId()).size();
+                List<RankedApplicant> p = sm.previewMatches(job.getJobId(), CO);
+                boolean ordered = p != null && p.size() >= 3 && p.get(0).candidateId() == strong.getId()
+                        && p.get(1).candidateId() == medium.getId() && p.get(2).candidateId() == weak.getId();
+                return ordered && sm.getRankedApplicants(job.getJobId()).size() == before;
+            });
+            t("Database", "preview is refused for another company", () -> sm.previewMatches(job.getJobId(), "Other Co") == null);
             t("Database", "weighted matching applies only candidates at or above cut-off", () -> {
                 // strong = 100%, medium = 35% (1 of 2 required, preferred missing), weak = 0%
                 sm.runWeightedMatching(CO, 30);

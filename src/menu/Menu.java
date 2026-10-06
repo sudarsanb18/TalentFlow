@@ -210,6 +210,7 @@ public class Menu {
             System.out.println("15 Set Job Match Rules (preferred skills, min experience)");
             System.out.println("16 Run Weighted Matching Engine (match % + cut-off)");
             System.out.println("17 Ranked Shortlist for a Job");
+            System.out.println("18 Preview Candidate Matches for a Job");
             System.out.println("---------------------------------------");
             System.out.println("14 Back to Main Menu");
             System.out.println("====================================");
@@ -233,6 +234,7 @@ public class Menu {
                 case 15 -> handleSetJobMatchRules(recruiter);
                 case 16 -> handleWeightedMatching(recruiter);
                 case 17 -> handleRankedShortlist(recruiter);
+                case 18 -> handlePreviewMatches(recruiter);
                 default -> System.out.println("❌ Invalid choice.");
             }
         }
@@ -271,7 +273,6 @@ public class Menu {
             System.out.println("2  View Available Job Openings");
             System.out.println("3  Update My Profile");
             System.out.println("4  Withdraw My Application");
-            System.out.println("7  View Jobs with My Match %");
             System.out.println("5  Delete My Account");
             System.out.println("6  Back to Main Menu");
             System.out.println("====================================");
@@ -300,7 +301,6 @@ public class Menu {
                     }
                 }
                 case 6 -> candidateLoop = false;
-                case 7 -> smartMatchService.viewJobsWithMatch(candidate);
                 default -> System.out.println("❌ Invalid choice.");
             }
         }
@@ -509,6 +509,11 @@ public class Menu {
             }
         }
         smartMatchService.runWeightedMatching(recruiter.getCompany(), cutoff);
+    }
+
+    private void handlePreviewMatches(Recruiter recruiter) {
+        int jobId = readIntInput("Enter Job ID to preview candidate matches for: ");
+        smartMatchService.previewMatches(jobId, recruiter.getCompany());
     }
 
     private void handleRankedShortlist(Recruiter recruiter) {

@@ -218,27 +218,58 @@ public class SmartMatchService {
         }
     }
 
-    // ---------------------------------------------------------------- candidate view
+    // ---------------------------------------------------------------- recruiter preview
 
-    /** Lists every job with the candidate's own match percentage and what is missing. */
-    public void viewJobsWithMatch(Candidate candidate) {
-        List<Job> jobs = jobRepo.getAllJobs();
-        if (jobs.isEmpty()) {
-            System.out.println("No job openings are available right now.");
-            return;
+    /** Every registered candidate scored against one job, best match first. Creates no applications. */
+    public List<RankedApplicant> scoreAllCandidates(int jobId) {
+        Job job = jobRepo.findById(jobId);
+        if (job == null) return new ArrayList<>();
+        Map<Integer, String> applied = new java.util.HashMap<>();
+        for (Application a : applicationRepo.getAllApplications()) {
+            if (a.getJobId() == jobId) applied.put(a.getCandidateId(), a.getStatus());
         }
-        System.out.println("\nJOB OPENINGS WITH YOUR MATCH - " + candidate.getName());
-        System.out.println("=====================================================================================================");
-        System.out.printf("| %-6s | %-24s | %-18s | %-12s | %-24s |%n", "JOB ID", "TITLE", "COMPANY", "YOUR MATCH", "MISSING SKILLS");
-        System.out.println("=====================================================================================================");
-        for (Job j : jobs) {
-            MatchScorer.Result r = scoreFor(candidate, j);
-            List<String> missing = new ArrayList<>(r.missingRequired());
-            missing.addAll(r.missingPreferred());
-            System.out.printf("| %-6d | %-24s | %-18s | %9d %%  | %-24s |%n", j.getJobId(), cut(j.getTitle(), 24),
-                    cut(j.getCompany(), 18), r.percent(), cut(missing.isEmpty() ? "-" : String.join(", ", missing), 24));
+        List<RankedApplicant> list = new ArrayList<>();
+        for (Candidate c : candidateRepo.getAllCandidates()) {
+            MatchScorer.Result r = scoreFor(c, job);
+            list.add(new RankedApplicant(0, c.getId(), c.getName(), c.getSkill(), c.getExperience(),
+                    r.percent(), applied.getOrDefault(c.getId(), "Not applied"), Long.MAX_VALUE, r.missingRequired()));
         }
-        System.out.println("=====================================================================================================");
+        return RankedApplicant.rank(list);
+    }
+
+    /** Recruiter-only view: how well each candidate matches a job of the recruiter's company. */
+    public List<RankedApplicant> previewMatches(int jobId, String company) {
+        Job job = jobRepo.findById(jobId);
+        if (job == null) {
+            System.out.println("Job ID " + jobId + " does not exist.");
+            return null;
+        }
+        if (!ownsJob(job, company)) {
+            System.out.println("Access denied: Job ID " + jobId + " belongs to another company.");
+            return null;
+        }
+        JobRule rule = ruleRepo.findRule(jobId);
+        List<RankedApplicant> scored = scoreAllCandidates(jobId);
+        System.out.println("\nCANDIDATE MATCH PREVIEW - " + job.getTitle() + " (Job ID " + jobId + ")");
+        System.out.println("Required: " + job.getRequiredSkill() + " | Preferred: "
+                + (rule.preferredSkills().isEmpty() ? "none" : rule.preferredSkills())
+                + " | Min experience: " + rule.minExperience() + " yrs");
+        System.out.println("=========================================================================================================");
+        System.out.printf("| %-4s | %-18s | %-22s | %-5s | %-7s | %-24s | %-11s |%n",
+                "RANK", "NAME", "SKILLS", "EXP", "MATCH", "MISSING REQUIRED", "APPLICATION");
+        System.out.println("=========================================================================================================");
+        if (scored.isEmpty()) {
+            System.out.println("No candidates are registered yet.");
+        }
+        int rank = 1;
+        for (RankedApplicant a : scored) {
+            System.out.printf("| %-4d | %-18s | %-22s | %-5.1f | %5d %% | %-24s | %-11s |%n",
+                    rank++, cut(a.name(), 18), cut(a.skills(), 22), a.experience(), a.matchPercent(),
+                    cut(a.missingRequired().isEmpty() ? "-" : String.join(", ", a.missingRequired()), 24), a.status());
+        }
+        System.out.println("=========================================================================================================");
+        System.out.println("Preview only: no applications were created. Use option 16 to apply candidates above a cut-off.");
+        return scored;
     }
 
     // ---------------------------------------------------------------- helpers
