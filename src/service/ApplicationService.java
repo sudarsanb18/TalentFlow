@@ -259,6 +259,11 @@ public class ApplicationService {
             return false;
         }
 
+        if ("Withdrawn".equalsIgnoreCase(app.getStatus())) {
+            System.out.println("❌ Application ID " + applicationId + " was withdrawn by the candidate and can no longer be changed.");
+            return false;
+        }
+
         String formattedStatus = newStatus.trim();
         if (!formattedStatus.equalsIgnoreCase("Applied") &&
             !formattedStatus.equalsIgnoreCase("Interview") &&

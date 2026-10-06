@@ -217,6 +217,23 @@ public class TalentFlowTests {
                 List<RankedApplicant> r = sm.getRankedApplicants(job.getJobId());
                 return moved == 1 && r.get(0).status().equals("Interview") && r.get(1).status().equals("Applied");
             });
+            t("Database", "withdrawn applicant is left out of the ranked shortlist", () -> {
+                List<RankedApplicant> r = sm.getRankedApplicants(job.getJobId());
+                int medApp = r.stream().filter(a -> a.candidateId() == medium.getId()).findFirst().get().applicationId();
+                boolean withdrawn = as.withdrawApplication(medApp, medium.getId());
+                boolean gone = sm.getRankedApplicants(job.getJobId()).stream().noneMatch(a -> a.candidateId() == medium.getId());
+                return withdrawn && gone;
+            });
+            t("Database", "recruiter cannot change a withdrawn application", () -> {
+                int medApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == medium.getId()
+                        && a.getJobId() == job.getJobId()).findFirst().get().getApplicationId();
+                return !as.updateApplicationStatus(medApp, "Interview");
+            });
+            t("Database", "recruiter can still move an active application to Selected", () -> {
+                int strongApp = as.getAllApplications().stream().filter(a -> a.getCandidateId() == strong.getId()
+                        && a.getJobId() == job.getJobId()).findFirst().get().getApplicationId();
+                return as.updateApplicationStatus(strongApp, "Selected");
+            });
             t("Database", "shortlist is refused for another company", () -> sm.shortlistTop(job.getJobId(), "Other Co", 1) == 0);
             t("Database", "CSV export writes a header and one row per applicant", () -> {
                 Path f = sm.exportShortlist(job.getJobId(), CO);

@@ -427,14 +427,12 @@ public class Menu {
         System.out.println("--- Update Application Status ---");
         int appId = readIntInput("Enter Application ID (e.g. 1001): ");
         System.out.println("Choose new status option:");
-        System.out.println("1) Applied  2) Interview  3) Selected  4) Rejected  5) Withdrawn");
-        int stChoice = readIntInput("Select status option (1-5): ");
+        System.out.println("1) Interview  2) Selected  3) Rejected");
+        int stChoice = readIntInput("Select status option (1-3): ");
         String newStatus = switch (stChoice) {
-            case 1 -> "Applied";
-            case 2 -> "Interview";
-            case 3 -> "Selected";
-            case 4 -> "Rejected";
-            case 5 -> "Withdrawn";
+            case 1 -> "Interview";
+            case 2 -> "Selected";
+            case 3 -> "Rejected";
             default -> "";
         };
 

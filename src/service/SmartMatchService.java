@@ -134,7 +134,7 @@ public class SmartMatchService {
         Map<Integer, Long> appliedAt = ruleRepo.getAppliedAtByJob(jobId);
         List<RankedApplicant> list = new ArrayList<>();
         for (Application app : applicationRepo.getAllApplications()) {
-            if (app.getJobId() != jobId) continue;
+            if (app.getJobId() != jobId || "Withdrawn".equalsIgnoreCase(app.getStatus())) continue;
             Candidate c = candidateRepo.findById(app.getCandidateId());
             if (c == null) continue;
             MatchScorer.Result r = scoreFor(c, job);
