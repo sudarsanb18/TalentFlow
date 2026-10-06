@@ -103,6 +103,8 @@ public class TalentFlowTests {
         });
         t("MatchScorer", "missing required skills are reported", () ->
                 MatchScorer.score("Java", 1, "Java, SQL, Git", "", 0).missingRequired().equals(List.of("SQL", "Git")));
+        t("MatchScorer", "ampersand separates skills (React & Java)", () -> pct("React & Java", 5, "Java", "", 0) == 100);
+        t("MatchScorer", "slash separates skills (Java/SQL)", () -> pct("Java/SQL", 1, "SQL, Java", "", 0) == 100);
         t("MatchScorer", "parseSkills drops empty tokens", () -> MatchScorer.parseSkills(" a, ,b,, ").size() == 2);
 
         // ------------------------------------------------------------ Ranking

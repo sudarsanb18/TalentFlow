@@ -18,7 +18,7 @@ import java.util.Map;
  *   expFactor      = min(1, candidateExperience / minExperience)      (1 when minExperience is 0)
  *   percent        = round(base * expFactor * 100)
  *
- * Skills are comma separated and compared case-insensitively by exact token, so "Java" never matches "JavaScript".
+ * Skills are separated by comma, "&" or "/" (so "React & Java" is two skills) and compared case-insensitively by exact token, so "Java" never matches "JavaScript".
  */
 public final class MatchScorer {
 
@@ -33,12 +33,12 @@ public final class MatchScorer {
     }
 
     /**
-     * Splits a comma separated skill list into trimmed, non-empty, de-duplicated tokens (original spelling kept).
+     * Splits a skill list (separators: comma, &, /) into trimmed, non-empty, de-duplicated tokens (original spelling kept).
      */
     public static List<String> parseSkills(String csv) {
         Map<String, String> unique = new LinkedHashMap<>();
         if (csv != null) {
-            for (String part : csv.split(",")) {
+            for (String part : csv.split("[,&/]")) {
                 String token = part.trim();
                 if (!token.isEmpty()) {
                     unique.putIfAbsent(token.toLowerCase(Locale.ROOT), token);
