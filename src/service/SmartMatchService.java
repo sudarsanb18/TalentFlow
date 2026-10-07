@@ -61,6 +61,11 @@ public class SmartMatchService {
         return saved;
     }
 
+    /** Saved match rules of a job (no preferred skills and no minimum experience when none were set). */
+    public JobRule getJobRule(int jobId) {
+        return ruleRepo.findRule(jobId);
+    }
+
     public MatchScorer.Result scoreFor(Candidate c, Job j) {
         JobRule rule = ruleRepo.findRule(j.getJobId());
         return MatchScorer.score(c.getSkill(), c.getExperience(), j.getRequiredSkill(),

@@ -41,7 +41,7 @@ Another batch built a similar project with the same admin/recruiter/candidate wo
 | Language | Core Java (JDK 17 or 21; uses records and switch expressions) |
 | Database | MySQL 8 through JDBC (`java.sql`: `DriverManager`, `PreparedStatement`, `ResultSet`) |
 | Driver | MySQL Connector/J (`lib/mysql-connector-j-26.7.0.jar`) – the only external library |
-| Interface | Console (Scanner input, formatted text tables) |
+| Interface | Console (Scanner input, formatted text tables) and a localhost web UI (JDK built-in `com.sun.net.httpserver`, plain HTML/CSS) |
 | IDE | Eclipse (`.classpath` included) / VS Code |
 | Version control | Git + GitHub |
 
@@ -78,6 +78,8 @@ util/   DBConnection, Validation, FileManager (audit log + CSV)
 |---|---:|---|
 | `src/menu/Main.java` | 41 | Entry point; switches the console to UTF-8 so ✅ ❌ ⚠️ print correctly |
 | `src/menu/Menu.java` | 625 | All console menus and input helpers |
+| `src/web/WebMain.java` | 475 | Browser UI on http://localhost:8080 – login, recruiter and candidate pages; reuses the services |
+| `src/web/Html.java` | 138 | HTML escaping, page layout and styling, form parsing, capturing service messages |
 | `src/model/User.java` | 128 | Abstract base class (id, name, email, phone, password) |
 | `src/model/Candidate.java` | 134 | Candidate extends User (skill, experience, status, resume summary) |
 | `src/model/Recruiter.java` | 69 | Recruiter extends User (company) |
@@ -281,6 +283,23 @@ When the database is empty, the app seeds demo data on first start:
    java -cp "bin;lib/mysql-connector-j-26.7.0.jar" TalentFlowTests --db     (also database tests)
    ```
    The `--db` tests create rows under the throwaway company `ZZ_TEST_CO` and delete them afterwards. They also write to `data/logs.txt`. Back up data you care about first.
+7. Run the web UI (same database as the console app):
+   ```
+   java -cp "bin;lib/mysql-connector-j-26.7.0.jar" web.WebMain
+   ```
+   Then open **http://localhost:8080** in a browser. Stop it with Ctrl+C. A different port can be given as an argument, e.g. `web.WebMain 9090`.
+
+### Web UI (localhost)
+
+The web UI is an extra way to use TalentFlow; the console application is unchanged. It is built only with the JDK's own HTTP server and the existing services, repositories and JDBC/MySQL, so a job posted in the browser is visible in the console and the other way round.
+
+| Who | Pages and actions |
+|---|---|
+| Recruiter | Dashboard of the company's jobs with active applicant counts · post a job · run the weighted matching engine with a cut-off · per job: set match rules, ranked shortlist with match % bars, set status (Interview / Selected / Rejected), shortlist top N, download the ranked list as CSV, and a match preview of every candidate |
+| Candidate | Profile · active applications with Withdraw (only while Applied or Interview) · job openings with Apply. **No match % is shown to candidates** |
+| Console only | Admin portal, new candidate registration, job update/delete, candidate profile update and account deletion |
+
+Safety: the server listens on 127.0.0.1 only (not reachable from other computers); every page checks the logged-in role; recruiters can only open their own company's jobs; all user text is HTML-escaped; sessions use an HttpOnly cookie. The same business rules as the console apply because the same service methods are called.
 
 ---
 
@@ -344,12 +363,12 @@ In addition, every feature was tested end to end through the real console menus 
 - IDs are generated as `MAX(id) + 1`, which is fine for one user but not for many at the same time.
 - A candidate who withdraws cannot apply to the same job again (one application per candidate per job).
 - Tested with small demo datasets only; no load or multi-user testing.
-- Console only; no GUI or web interface.
+- The web UI covers the recruiter and candidate flows; admin and registration remain console-only. It runs on localhost only and keeps logins in memory (they end when the server stops).
 
 ## 13. Future scope
 
 - Hash passwords (e.g. BCrypt) and move configuration to an external properties file.
-- Web interface or REST API on top of the existing service layer.
+- Extend the web UI to the admin portal and registration, and host it online with a cloud MySQL database.
 - Interview scheduling and email notifications on status changes.
 - Resume upload with automatic skill extraction.
 - JUnit tests with code-coverage reporting.
